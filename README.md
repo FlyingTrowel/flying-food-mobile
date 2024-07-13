@@ -1,16 +1,13 @@
-# flying_food
+# Flying Food
 
-A new Flutter project.
+ICT602
+RCDCS251 5B
+AIMAN BAZLI BIN ROSLAN 2023305751
 
-## Getting Started
+AIEMAN NUR HAKIM BIN ROSLAN 2023376281
 
-This project is a starting point for a Flutter application.
+MUHAMMAD HAKIMI BIN SAMSURI 2023379837
 
-A few resources to get you started if this is your first Flutter project:
+MUHAMMAD IRFANNUDDIN BIN GAFRI 2023375241
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Flying Food© 2024
