@@ -40,6 +40,7 @@ dependencies:
   http: ^1.2.1
   custom_info_window: ^1.0.1
   interactive_maps_marker: ^0.0.10
+  url_launcher: 6.1.5
 
 
 dev_dependencies:
@@ -95,4 +96,4 @@ flutter:
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
   assets:
-    - assets/custom_marker.jpg
+    - assets/ff.png

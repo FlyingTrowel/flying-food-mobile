@@ -3,6 +3,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'dart:async';
 import 'package:custom_info_window/custom_info_window.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class MapPage extends StatefulWidget {
   const MapPage({super.key});
@@ -29,10 +31,18 @@ class _MapPageState extends State<MapPage> {
     _checkPermissionsAndGetLocation();
     _loadMarkers();
     _locationService.onLocationChanged.listen((LocationData locationData) {
-      setState(() {
-        _currentLocation = locationData;
-      });
+      if (mounted) {
+        setState(() {
+          _currentLocation = locationData;
+        });
+      }
     });
+  }
+
+  @override
+  void dispose() {
+    _customInfoWindowController.dispose();
+    super.dispose();
   }
 
   Future<void> _checkPermissionsAndGetLocation() async {
@@ -53,59 +63,51 @@ class _MapPageState extends State<MapPage> {
     if (permissionGranted == PermissionStatus.denied) {
       permissionGranted = await _locationService.requestPermission();
       if (permissionGranted != PermissionStatus.granted) {
-        setState(() {
-          _currentLocation = null;
-        });
+        if (mounted) {
+          setState(() {
+            _currentLocation = null;
+          });
+        }
         return;
       }
     }
 
     final locationData = await _locationService.getLocation();
-    setState(() {
-      _currentLocation = locationData;
-    });
+    if (mounted) {
+      setState(() {
+        _currentLocation = locationData;
+      });
+    }
   }
 
   Future<void> _loadMarkers() async {
-    // Mock data for marker locations and info
-    List<Map<String, dynamic>> markerData = [
-      {
-        "location": LatLng(6.4485680435702575, 100.28012124888713),
-        "operatorName": "FoodTruck 1",
-        "menu": "Pizza, Burger, Coke",
-        "schedule": "Monday - Friday 7:00 - 18:00"
-      },
-      {
-        "location": LatLng(6.450091075402806, 100.28034445202745),
-        "operatorName": "FoodTruck 2",
-        "menu": "Tacos, Burritos, Soda",
-        "schedule": "Monday - Friday 8:00 - 19:00"
-      },
-      {
-        "location": LatLng(5.680852603799453, 100.49397257956794),
-        "operatorName": "FoodTruck 3",
-        "menu": "Sushi, Ramen, Tea",
-        "schedule": "Monday - Friday 9:00 - 20:00"
-      },
-    ];
+    final response = await http.get(Uri.parse('http://10.0.2.2:8000/api/markers'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final markerData = data['body'] as List;
 
-    for (var marker in markerData) {
-      _markers.add(
-        Marker(
-          markerId: MarkerId(marker["location"].toString()),
-          position: marker["location"],
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
-          onTap: () {
-            _customInfoWindowController.addInfoWindow!(
-              _buildCustomInfoWindowContent(marker["operatorName"], marker["menu"], marker["schedule"]),
-              marker["location"],
-            );
-          },
-        ),
-      );
+      for (var marker in markerData) {
+        _markers.add(
+          Marker(
+            markerId: MarkerId(marker["id"].toString()),
+            position: LatLng(double.parse(marker["lat"]), double.parse(marker["lng"])),
+            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
+            onTap: () {
+              _customInfoWindowController.addInfoWindow!(
+                _buildCustomInfoWindowContent(marker["operator_name"], marker["menu"], marker["schedule"]),
+                LatLng(double.parse(marker["lat"]), double.parse(marker["lng"])),
+              );
+            },
+          ),
+        );
+      }
+
+      if (mounted) {
+        setState(() {});
+      }
+    } else {
+      throw Exception('Failed to load markers');
     }
-
-    setState(() {});
   }
 
   Widget _buildCustomInfoWindowContent(String operatorName, String menu, String schedule) {
