@@ -1,4 +1,4 @@
-# Flying Food
+# Flying Food Mobile Application (Flutter)
 
 [Flying Food Server App](https://github.com/FlyingTrowel/flying-food-be).
 
